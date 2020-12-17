@@ -5293,11 +5293,11 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\frres\\OneDrive\\Desktop\\Invoices\\InvoiceGenerator\\InvoiceGenerator.csproj",
+      "projectUniqueName": "C:\\Users\\frres\\source\\repos\\Invoice-Generator\\InvoiceGenerator\\InvoiceGenerator.csproj",
       "projectName": "InvoiceGenerator",
-      "projectPath": "C:\\Users\\frres\\OneDrive\\Desktop\\Invoices\\InvoiceGenerator\\InvoiceGenerator.csproj",
+      "projectPath": "C:\\Users\\frres\\source\\repos\\Invoice-Generator\\InvoiceGenerator\\InvoiceGenerator.csproj",
       "packagesPath": "C:\\Users\\frres\\.nuget\\packages\\",
-      "outputPath": "C:\\Users\\frres\\OneDrive\\Desktop\\Invoices\\InvoiceGenerator\\obj\\",
+      "outputPath": "C:\\Users\\frres\\source\\repos\\Invoice-Generator\\InvoiceGenerator\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Microsoft\\Xamarin\\NuGet\\",

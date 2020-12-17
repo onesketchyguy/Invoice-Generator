@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "B56gL5xuxZ1rib8qcWgxYw0LTD2CGomt/lj7vVPxCujJo6n55AdySMHSaFlNqz9R9WK63MxVChiHw7iXuGPxXg==",
+  "dgSpecHash": "hi03VZbm/d76OEAS4AQqqvdtU/jC9Udu9vit0kYUM7LVze3KYeyKx+YIlm3aqGftGsbW/bmEkpV5PAOgqYaRxA==",
   "success": true,
-  "projectFilePath": "C:\\Users\\frres\\OneDrive\\Desktop\\Invoices\\InvoiceGenerator\\InvoiceGenerator.csproj",
+  "projectFilePath": "C:\\Users\\frres\\source\\repos\\Invoice-Generator\\InvoiceGenerator\\InvoiceGenerator.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\frres\\.nuget\\packages\\bouncycastle\\1.8.6.1\\bouncycastle.1.8.6.1.nupkg.sha512",
     "C:\\Users\\frres\\.nuget\\packages\\common.logging\\3.4.1\\common.logging.3.4.1.nupkg.sha512",
