@@ -71,3 +71,6 @@ C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Release\netco
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Release\netcoreapp3.1\InvoiceGenerator.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Release\netcoreapp3.1\InvoiceGenerator.pdb
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Release\netcoreapp3.1\InvoiceGenerator.genruntimeconfig.cache
+C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Release\netcoreapp3.1\InvoiceGenerator.csprojAssemblyReference.cache
+C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Release\netcoreapp3.1\InvoiceGenerator.InputPropmts.FirstLaunchSurvey.resources
+C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Release\netcoreapp3.1\InvoiceGenerator.csproj.GenerateResource.cache

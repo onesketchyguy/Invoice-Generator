@@ -119,6 +119,7 @@ namespace InvoiceGenerator
 
                 SetFont(ref paragraph, false, 14);
                 paragraph.Add(data.billerAddress);
+                paragraph.Add(data.billerContact);
 
                 AddParagraph(ref paragraph, ref document);
 
@@ -135,6 +136,7 @@ namespace InvoiceGenerator
 
                 SetFont(ref paragraph, false, 14);
                 paragraph.Add(data.billingAddress);
+                paragraph.Add(data.billingContact);
 
                 AddParagraph(ref paragraph, ref document);
 

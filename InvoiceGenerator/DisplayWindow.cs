@@ -18,6 +18,8 @@ namespace InvoiceGenerator
         private const string EXPORT = "Export PDF";
         private const string EXPORT_LOCATION = "Change export location";
         private const string SAVE_WORKITEMS = "Save current work items";
+        private const string LOAD_WORKITEMS = "Load last work items";
+        private const string MODIFY_CONTACT_INFO = "Change billing info";
 
         public static string Format(string input)
         {
@@ -53,25 +55,46 @@ namespace InvoiceGenerator
             toolbar.Parent = this;
             toolbar.Items.Add(EXPORT);
             toolbar.Items.Add(EXPORT_LOCATION);
+            toolbar.Items.Add(MODIFY_CONTACT_INFO);
             toolbar.Items.Add(SAVE_WORKITEMS);
+            toolbar.Items.Add(LOAD_WORKITEMS);
+
             toolbar.ItemClicked += Toolbar_ItemClicked;
 
             // Input box
+            var descriptionBoxHeader = new TextBox();
+            descriptionBoxHeader.Parent = this;
+            descriptionBoxHeader.Enabled = false;
+            descriptionBoxHeader.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            descriptionBoxHeader.Size = new Size(300, 50);
+            descriptionBoxHeader.Location = new Point(0, 25);
+            descriptionBoxHeader.PlaceholderText = "Description of work";
+            descriptionBoxHeader.ForeColor = Color.Black;
+
             inputBox = new TextBox();
             inputBox.Parent = this;
             inputBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             inputBox.Size = new Size(300, 50);
-            inputBox.Location = new Point(0, 25);
-            inputBox.PlaceholderText = "Description of work.";
+            inputBox.Location = new Point(0, 50);
+            inputBox.PlaceholderText = "Description";
             inputBox.ForeColor = Color.Black;
 
             // Work hours input
+            var workBoxHeader = new TextBox();
+            workBoxHeader.Parent = this;
+            workBoxHeader.Enabled = false;
+            workBoxHeader.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            workBoxHeader.Size = new Size(300, 75);
+            workBoxHeader.Location = new Point(0, 75);
+            workBoxHeader.PlaceholderText = "Worked hours";
+            workBoxHeader.ForeColor = Color.Black;
+
             workedHours = new TextBox();
             workedHours.Parent = this;
             workedHours.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             workedHours.Size = new Size(300, 50);
-            workedHours.Location = new Point(0, 75);
-            workedHours.PlaceholderText = "Worked hours";
+            workedHours.Location = new Point(0, 100);
+            workedHours.PlaceholderText = "0.0";
             workedHours.ForeColor = Color.Black;
             workedHours.TextChanged += WorkedHours_TextChanged;
 
@@ -94,10 +117,11 @@ namespace InvoiceGenerator
 
             addWorkButton.Click += (object sender, EventArgs e) => AddWork();
 
-            // Remvoe work button
-            /*var removeWorkButton = new Button();
+            // Remove work button
+            removeWorkButton = new Button();
             removeWorkButton.Parent = this;
-            //removeWorkButton.Enabled = false;
+            removeWorkButton.Enabled = false;
+            removeWorkButton.Visible = false;
             removeWorkButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             removeWorkButton.Location = new Point(480, 80);
             removeWorkButton.Size = new Size(100, 35);
@@ -105,7 +129,13 @@ namespace InvoiceGenerator
             removeWorkButton.ForeColor = Color.Black;
             removeWorkButton.BackColor = Color.IndianRed;
 
-            removeWorkButton.Click += (object sender, EventArgs e) => RemoveSelectedWork();*/
+            removeWorkButton.Click += (object sender, EventArgs e) =>
+            {
+                removeWorkButton.Enabled = false;
+                removeWorkButton.Visible = false;
+
+                RemoveWork(inputBox.Text);
+            };
 
             // Start app
             var formContext = new MultiFormContext(this);
@@ -123,7 +153,7 @@ namespace InvoiceGenerator
             else // First launch
             {
                 formContext = new MultiFormContext(this,
-                    new FirstLaunchSurvey((BillingObject recievedData) =>
+                    new FirstLaunchSurvey(new BillingObject(), (BillingObject recievedData) =>
                     {
                         data = recievedData;
                         SetExportLocation();
@@ -158,6 +188,19 @@ namespace InvoiceGenerator
 
                 case SAVE_WORKITEMS:
                     SaveWorkItems();
+                    break;
+
+                case LOAD_WORKITEMS:
+                    LoadWorkItems();
+                    break;
+
+                case MODIFY_CONTACT_INFO:
+                    var survey = new FirstLaunchSurvey(data, (BillingObject recievedData) =>
+                    {
+                        data = recievedData;
+                    });
+
+                    survey.Show();
                     break;
 
                 default:
@@ -255,6 +298,10 @@ namespace InvoiceGenerator
 
             for (int i = 0; i < load.description.Length; i++)
             {
+                // Remove any existing logs
+                RemoveWork(load.description[i]);
+
+                // Add new logs
                 AddWorkToWorkList(load.description[i], load.value[i]);
             }
         }
@@ -267,6 +314,8 @@ namespace InvoiceGenerator
         }
 
         // Need a button region for adding work
+        private Button removeWorkButton;
+
         private TextBox inputBox;
 
         private TextBox workedHours;
@@ -323,12 +372,19 @@ namespace InvoiceGenerator
 
             int index = workedItemsDisplay.Controls.Count;
 
-            // Remove this item on clicking it. TO BE REPLACED WITH SELECTING ITEM AND CLICKING A REMOVE BUTTON
-            workItem.Click += (object sender, EventArgs e) => RemoveWork(description);
+            // Remove this item on clicking it.
+            workItem.Click += (object sender, EventArgs e) =>
+            {
+                inputBox.Text = description;
+                removeWorkButton.Enabled = true;
+                removeWorkButton.Visible = true;
+            };
         }
 
         public void RemoveWork(string description)
         {
+            if (document.workLogs.ContainsKey(description) == false) return;
+
             document.workLogs.Remove(description);
 
             var list = workedItemsDisplay.Controls;

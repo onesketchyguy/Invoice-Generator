@@ -15,31 +15,15 @@ namespace InvoiceGenerator.InputPropmts
 
         private BillingObject data;
 
-        // Biller area
-
-        // Name input
-        // Addy input
-        private string biller_email_phone;
-
-        private string billerAddy;
-
-        // Charge amount
-
-        // Billing area
-
-        // Name input
-        // Addy input
-        private string billing_email_phone;
-
-        private string billingAddy;
-
-        public FirstLaunchSurvey(OnFinishedSurvey onFinished)
+        public FirstLaunchSurvey(BillingObject loadData, OnFinishedSurvey onFinished)
         {
             onFinishedSurveyCallback += onFinished;
 
             this.Size = new Size(500, 500);
 
-            data = new BillingObject();
+            this.Text = "Billing information:";
+
+            data = loadData;
 
             // Biller
             TextBox billerTitle = new TextBox();
@@ -51,30 +35,36 @@ namespace InvoiceGenerator.InputPropmts
             billerTitle.ForeColor = Color.Black;
             billerTitle.Enabled = false;
 
+            // Name
             TextBox biller_nameInput = new TextBox();
             biller_nameInput.Parent = this;
             biller_nameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             biller_nameInput.Size = new Size(300, 50);
             biller_nameInput.Location = new Point(0, 50);
             biller_nameInput.PlaceholderText = "Name";
+            biller_nameInput.Text = data.biller;
             biller_nameInput.ForeColor = Color.Black;
             biller_nameInput.TextChanged += Biller_nameInput_TextChanged;
 
+            // Address
             TextBox biller_addyInput = new TextBox();
             biller_addyInput.Parent = this;
             biller_addyInput.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             biller_addyInput.Size = new Size(300, 50);
             biller_addyInput.Location = new Point(0, 75);
             biller_addyInput.PlaceholderText = "Address";
+            biller_addyInput.Text = data.billerAddress;
             biller_addyInput.ForeColor = Color.Black;
             biller_addyInput.TextChanged += Biller_addyInput_TextChanged;
 
+            // Contact
             TextBox biller_email_phone = new TextBox();
             biller_email_phone.Parent = this;
             biller_email_phone.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             biller_email_phone.Size = new Size(300, 50);
             biller_email_phone.Location = new Point(0, 100);
             biller_email_phone.PlaceholderText = "email and phone";
+            biller_email_phone.Text = data.billerContact;
             biller_email_phone.ForeColor = Color.Black;
             biller_email_phone.TextChanged += Biller_email_phone_TextChanged;
 
@@ -88,30 +78,36 @@ namespace InvoiceGenerator.InputPropmts
             billingTitle.ForeColor = Color.Black;
             billingTitle.Enabled = false;
 
+            // Name
             TextBox billing_nameInput = new TextBox();
             billing_nameInput.Parent = this;
             billing_nameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             billing_nameInput.Size = new Size(300, 50);
             billing_nameInput.Location = new Point(0, 175);
             billing_nameInput.PlaceholderText = "Name";
+            billing_nameInput.Text = data.billing;
             billing_nameInput.ForeColor = Color.Black;
             billing_nameInput.TextChanged += Billing_nameInput_TextChanged;
 
+            // Address
             TextBox billing_addyInput = new TextBox();
             billing_addyInput.Parent = this;
             billing_addyInput.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             billing_addyInput.Size = new Size(300, 50);
             billing_addyInput.Location = new Point(0, 200);
             billing_addyInput.PlaceholderText = "Address";
+            billing_addyInput.Text = data.billingAddress;
             billing_addyInput.ForeColor = Color.Black;
             billing_addyInput.TextChanged += Billing_addyInput_TextChanged;
 
+            // Contact
             TextBox billing_email_phone = new TextBox();
             billing_email_phone.Parent = this;
             billing_email_phone.Anchor = AnchorStyles.Top | AnchorStyles.Left;
             billing_email_phone.Size = new Size(300, 50);
             billing_email_phone.Location = new Point(0, 225);
             billing_email_phone.PlaceholderText = "email and phone";
+            billing_email_phone.Text = data.billingContact;
             billing_email_phone.ForeColor = Color.Black;
             billing_email_phone.TextChanged += Billing_email_phone_TextChanged;
 
@@ -122,6 +118,7 @@ namespace InvoiceGenerator.InputPropmts
             billerCharge.Size = new Size(300, 50);
             billerCharge.Location = new Point(0, 300);
             billerCharge.PlaceholderText = "Cost per work hour";
+            billerCharge.Text = data.chargePerHour.ToString();
             billerCharge.ForeColor = Color.Black;
             billerCharge.TextChanged += Cost_Changed;
 
@@ -144,14 +141,12 @@ namespace InvoiceGenerator.InputPropmts
 
         private void Biller_addyInput_TextChanged(object sender, EventArgs e)
         {
-            billerAddy = ((TextBox)sender).Text;
-            data.billerAddress = billerAddy + '\n' + biller_email_phone;
+            data.billerAddress = ((TextBox)sender).Text;
         }
 
         private void Biller_email_phone_TextChanged(object sender, EventArgs e)
         {
-            biller_email_phone = ((TextBox)sender).Text;
-            data.billerAddress = billerAddy + '\n' + biller_email_phone;
+            data.billerContact = ((TextBox)sender).Text;
         }
 
         private void Billing_nameInput_TextChanged(object sender, EventArgs e)
@@ -161,14 +156,12 @@ namespace InvoiceGenerator.InputPropmts
 
         private void Billing_addyInput_TextChanged(object sender, EventArgs e)
         {
-            billingAddy = ((TextBox)sender).Text;
-            data.billingAddress = billingAddy + '\n' + billing_email_phone;
+            data.billingAddress = ((TextBox)sender).Text;
         }
 
         private void Billing_email_phone_TextChanged(object sender, EventArgs e)
         {
-            billing_email_phone = ((TextBox)sender).Text;
-            data.billingAddress = billingAddy + '\n' + billing_email_phone;
+            data.billingContact = ((TextBox)sender).Text;
         }
 
         private void Cost_Changed(object sender, EventArgs e)
@@ -200,7 +193,7 @@ namespace InvoiceGenerator.InputPropmts
             {
                 if (close)
                 {
-                    this.Close();
+                    Close();
                 }
             });
 
@@ -230,6 +223,8 @@ namespace InvoiceGenerator.InputPropmts
 
         private Button yesButton, noButton;
 
+        private bool clickedYes = false;
+
         public VerifyYesNo(string question, OnFinished onFinished)
         {
             this.Size = new System.Drawing.Size(400, 200);
@@ -258,21 +253,21 @@ namespace InvoiceGenerator.InputPropmts
 
         protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            onFinishedCallback?.Invoke(false);
+            onFinishedCallback?.Invoke(clickedYes);
 
             base.OnFormClosing(e);
         }
 
         private void NoButton_Click(object sender, EventArgs e)
         {
-            onFinishedCallback?.Invoke(true);
+            clickedYes = false;
 
             this.Close();
         }
 
         private void YesButton_Click(object sender, EventArgs e)
         {
-            onFinishedCallback?.Invoke(true);
+            clickedYes = true;
 
             this.Close();
         }

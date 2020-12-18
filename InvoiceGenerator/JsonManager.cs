@@ -92,20 +92,17 @@ namespace InvoiceGenerator
     {
         public string invoiceDirectory;
 
-        public string biller = "Forrest Lowe";
+        public string biller = "Anony Mous";
 
-        public string billerAddress = @"12435 se linwood ave, G5
-Milwaukie
-97222
-541-668-2129
-lowebros9812@gmail.com";
+        public string billerAddress = "12435 se street ave, City Zip";
 
-        public string billing = "Games Alchemist Ltd";
+        public string billerContact = "PHONE eMail";
 
-        public string billingAddress = @"24 Needhams Row
-Beaufort, Ebbw Vale, Wales
-NP23 5PL
-tobias@gamesalchemist.com";
+        public string billing = "Anony Mous";
+
+        public string billingAddress = "12435 se street ave, City Zip";
+
+        public string billingContact = "PHONE eMail";
 
         public int invoiceNumber = 1;
         public double chargePerHour = 10;
