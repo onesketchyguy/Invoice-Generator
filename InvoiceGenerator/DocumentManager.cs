@@ -1,11 +1,9 @@
-﻿using System;
-using System.IO;
-using System.Collections.Generic;
-
-// Deprecated
+﻿// Deprecated
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.draw;
+using System;
+using System.Collections.Generic;
+using System.IO;
 
 /* New
 using iText.Kernel.Pdf;

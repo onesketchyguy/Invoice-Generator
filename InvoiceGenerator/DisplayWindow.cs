@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
-using System.Windows.Forms;
+﻿using InvoiceGenerator.InputPropmts;
+using System;
 using System.Drawing;
-using InvoiceGenerator.InputPropmts;
-using System.Linq;
+using System.Windows.Forms;
 
 namespace InvoiceGenerator
 {
@@ -89,14 +85,14 @@ namespace InvoiceGenerator
             workBoxHeader.PlaceholderText = "Worked hours";
             workBoxHeader.ForeColor = Color.Black;
 
-            workedHours = new TextBox();
-            workedHours.Parent = this;
-            workedHours.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            workedHours.Size = new Size(300, 50);
-            workedHours.Location = new Point(0, 100);
-            workedHours.PlaceholderText = "0.0";
-            workedHours.ForeColor = Color.Black;
-            workedHours.TextChanged += WorkedHours_TextChanged;
+            workedHoursInput = new TextBox();
+            workedHoursInput.Parent = this;
+            workedHoursInput.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            workedHoursInput.Size = new Size(300, 50);
+            workedHoursInput.Location = new Point(0, 100);
+            workedHoursInput.PlaceholderText = "0.0";
+            workedHoursInput.ForeColor = Color.Black;
+            workedHoursInput.TextChanged += WorkedHours_TextChanged;
 
             // Show work
             workedItemsDisplay = new FlowLayoutPanel();
@@ -106,6 +102,25 @@ namespace InvoiceGenerator
             workedItemsDisplay.Location = new Point(600, 25);
             workedItemsDisplay.ForeColor = Color.Black;
             workedItemsDisplay.BackColor = Color.LightBlue;
+            workedItemsDisplay.AutoScroll = true;
+
+            totalHoursWorkedDisplay = new TextBox();
+            totalHoursWorkedDisplay.Parent = this;
+            totalHoursWorkedDisplay.Enabled = false;
+            totalHoursWorkedDisplay.Anchor = AnchorStyles.Bottom;
+            totalHoursWorkedDisplay.Size = new Size(200, 50);
+            totalHoursWorkedDisplay.Location = new Point(600, 350);
+            totalHoursWorkedDisplay.PlaceholderText = "0.0";
+            totalHoursWorkedDisplay.ForeColor = Color.Black;
+
+            totalChargeDisplay = new TextBox();
+            totalChargeDisplay.Parent = this;
+            totalChargeDisplay.Enabled = false;
+            totalChargeDisplay.Anchor = AnchorStyles.Bottom;
+            totalChargeDisplay.Size = new Size(200, 50);
+            totalChargeDisplay.Location = new Point(600, 380);
+            totalChargeDisplay.PlaceholderText = "0.0";
+            totalChargeDisplay.ForeColor = Color.Black;
 
             // Add work button
             var addWorkButton = new Button();
@@ -161,6 +176,8 @@ namespace InvoiceGenerator
             }
 
             LoadWorkItems();
+
+            UpdateWorkCountDisplay();
 
             Application.Run(formContext);
         }
@@ -226,7 +243,7 @@ namespace InvoiceGenerator
                 }
             }
 
-            workedHours.Text = chars;
+            workedHoursInput.Text = chars;
         }
 
         private void ExportPDF_Click(object sender, EventArgs e)
@@ -316,16 +333,21 @@ namespace InvoiceGenerator
         // Need a button region for adding work
         private Button removeWorkButton;
 
+        // Need a string input for describing a job
         private TextBox inputBox;
 
-        private TextBox workedHours;
+        // Need a digit input for hours worked (TO BE REPLACED BY A TIMER)
+        private TextBox workedHoursInput;
+
+        private TextBox totalHoursWorkedDisplay;
+        private TextBox totalChargeDisplay;
 
         public void AddWork()
         {
-            if (string.IsNullOrWhiteSpace(workedHours.Text)) return;
+            if (string.IsNullOrWhiteSpace(workedHoursInput.Text)) return;
             if (string.IsNullOrWhiteSpace(inputBox.Text)) return;
 
-            double value = double.Parse(workedHours.Text);
+            double value = double.Parse(workedHoursInput.Text);
             string description = inputBox.Text;
 
             // Add an item to the worked items display
@@ -336,6 +358,7 @@ namespace InvoiceGenerator
         {
             document.AddWorkLog(description, value);
 
+            // Instead of this we could remove all items and have a list of just the data we need.
             var list = workedItemsDisplay.Controls;
             for (int i = list.Count - 1; i > 0; i--)
             {
@@ -357,10 +380,13 @@ namespace InvoiceGenerator
                     value += oldValue;
 
                     item.Text = $"{description} for {Math.Round(value, 3)} hours";
+
+                    UpdateWorkCountDisplay();
                     return;
                 }
             }
 
+            // Add a new item
             var workItem = new Button();
             workItem.Parent = workedItemsDisplay;
             workItem.Anchor = AnchorStyles.Top;
@@ -379,6 +405,8 @@ namespace InvoiceGenerator
                 removeWorkButton.Enabled = true;
                 removeWorkButton.Visible = true;
             };
+
+            UpdateWorkCountDisplay();
         }
 
         public void RemoveWork(string description)
@@ -398,13 +426,37 @@ namespace InvoiceGenerator
                     item.Dispose();
                 }
             }
+
+            UpdateWorkCountDisplay();
+        }
+
+        private void UpdateWorkCountDisplay()
+        {
+            double totalHoursWorked = 0.0;
+
+            var list = workedItemsDisplay.Controls;
+            for (int i = list.Count - 1; i > 0; i--)
+            {
+                var item = (Button)list[i];
+                var text = item.Text.Split(' ');
+
+                double itemValue = 0.0;
+
+                for (int j = text.Length - 1; j > 0; j--)
+                {
+                    double.TryParse(text[j], out itemValue);
+
+                    if (itemValue > 0) break;
+                }
+
+                totalHoursWorked += itemValue;
+            }
+
+            totalHoursWorkedDisplay.PlaceholderText = $"Total hours worked: {totalHoursWorked}";
+            totalChargeDisplay.PlaceholderText = $"Total charge: {Math.Round((totalHoursWorked * data.chargePerHour), 2)}";
         }
 
         // Need a region to display existing work
         private FlowLayoutPanel workedItemsDisplay;
-
-        // Need a string input for describing a job
-
-        // Need a digit input for hours worked (TO BE REPLACED BY A TIMER)
     }
 }

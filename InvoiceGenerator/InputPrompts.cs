@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
-using System.Text;
 using System.Windows.Forms;
 
 namespace InvoiceGenerator.InputPropmts
@@ -19,8 +17,7 @@ namespace InvoiceGenerator.InputPropmts
         {
             onFinishedSurveyCallback += onFinished;
 
-            this.Size = new Size(500, 500);
-
+            this.Size = new Size(350, 500);
             this.Text = "Billing information:";
 
             data = loadData;
@@ -112,6 +109,15 @@ namespace InvoiceGenerator.InputPropmts
             billing_email_phone.TextChanged += Billing_email_phone_TextChanged;
 
             // Cost box
+            TextBox billerChargeDetails = new TextBox();
+            billerChargeDetails.Parent = this;
+            billerChargeDetails.Enabled = false;
+            billerChargeDetails.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            billerChargeDetails.Size = new Size(300, 50);
+            billerChargeDetails.Location = new Point(0, 270);
+            billerChargeDetails.PlaceholderText = "Cost per work hour";
+            billerChargeDetails.ForeColor = Color.Black;
+
             TextBox billerCharge = new TextBox();
             billerCharge.Parent = this;
             billerCharge.Anchor = AnchorStyles.Top | AnchorStyles.Left;
@@ -121,6 +127,26 @@ namespace InvoiceGenerator.InputPropmts
             billerCharge.Text = data.chargePerHour.ToString();
             billerCharge.ForeColor = Color.Black;
             billerCharge.TextChanged += Cost_Changed;
+
+            // Invoice number
+            TextBox invoiceNumberDetails = new TextBox();
+            invoiceNumberDetails.Parent = this;
+            invoiceNumberDetails.Enabled = false;
+            invoiceNumberDetails.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            invoiceNumberDetails.Size = new Size(300, 50);
+            invoiceNumberDetails.Location = new Point(0, 330);
+            invoiceNumberDetails.PlaceholderText = "Invoice Number";
+            invoiceNumberDetails.ForeColor = Color.Black;
+
+            TextBox invoiceNumber = new TextBox();
+            invoiceNumber.Parent = this;
+            invoiceNumber.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            invoiceNumber.Size = new Size(300, 50);
+            invoiceNumber.Location = new Point(0, 360);
+            invoiceNumber.PlaceholderText = "0";
+            invoiceNumber.Text = data.invoiceNumber.ToString();
+            invoiceNumber.ForeColor = Color.Black;
+            invoiceNumber.TextChanged += InvoiceNumber_Changed;
 
             // Finished button
             var doneButton = new Button();
@@ -187,6 +213,29 @@ namespace InvoiceGenerator.InputPropmts
             data.chargePerHour = double.Parse(chars);
         }
 
+        private void InvoiceNumber_Changed(object sender, EventArgs e)
+        {
+            // Get hours input
+            var input = ((TextBox)sender).Text;
+
+            if (string.IsNullOrWhiteSpace(input))
+                return;
+
+            string chars = "";
+
+            for (int i = 0; i < input.Length; i++)
+            {
+                if (char.IsDigit(input[i]) == true)
+                {
+                    chars += input[i];
+                }
+            }
+
+            ((TextBox)sender).Text = chars;
+
+            data.invoiceNumber = int.Parse(chars);
+        }
+
         private void HandleExitRequest()
         {
             var exitWindow = new VerifyYesNo("Finished?", (bool close) =>
@@ -227,17 +276,17 @@ namespace InvoiceGenerator.InputPropmts
 
         public VerifyYesNo(string question, OnFinished onFinished)
         {
-            this.Size = new System.Drawing.Size(400, 200);
+            this.Size = new Size(400, 200);
 
             text.Parent = this;
             text.Text = question;
-            text.Location = new System.Drawing.Point(100, 10);
+            text.Location = new Point(100, 10);
             text.Anchor = AnchorStyles.Top;
 
             yesButton = new Button();
             yesButton.Text = "Yes";
             yesButton.Parent = this;
-            yesButton.Location = new System.Drawing.Point(50, 100);
+            yesButton.Location = new Point(50, 100);
             yesButton.Anchor = AnchorStyles.Left | AnchorStyles.Bottom;
 
             yesButton.Click += YesButton_Click;
@@ -245,7 +294,7 @@ namespace InvoiceGenerator.InputPropmts
             noButton = new Button();
             noButton.Text = "No";
             noButton.Parent = this;
-            noButton.Location = new System.Drawing.Point(300, 100);
+            noButton.Location = new Point(300, 100);
             noButton.Anchor = AnchorStyles.Right | AnchorStyles.Bottom;
 
             noButton.Click += NoButton_Click;
