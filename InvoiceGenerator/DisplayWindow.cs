@@ -23,6 +23,7 @@ namespace InvoiceGenerator
 
             for (int i = 0; i < input.Length; i++)
             {
+                // Check for a new line character and format appropriatly.
                 if (input[i] == '\\' && i + 1 < input.Length && input[i + 1] == 'n')
                 {
                     val += '\n';

@@ -1,5 +1,6 @@
 ﻿using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
+using System;
 using System.IO;
 
 namespace InvoiceGenerator
@@ -22,11 +23,45 @@ namespace InvoiceGenerator
                 if (Directory.Exists(DATA_PATH) == false)
                     Directory.CreateDirectory(DATA_PATH);
 
-                return DATA_PATH + "billing.json";
+                var dir = DATA_PATH + "\\billing\\";
+
+                if (Directory.Exists(dir) == false)
+                    Directory.CreateDirectory(dir);
+
+                return dir;
             }
         }
 
         private static string SAVE_PATH
+        {
+            get
+            {
+                // Check path
+                if (Directory.Exists(DATA_PATH) == false)
+                    Directory.CreateDirectory(DATA_PATH);
+
+                var dir = DATA_PATH + "\\work items\\";
+
+                if (Directory.Exists(dir) == false)
+                    Directory.CreateDirectory(dir);
+
+                return dir;
+            }
+        }
+
+        private static string BILLING
+        {
+            get
+            {
+                // Check path
+                if (Directory.Exists(DATA_PATH) == false)
+                    Directory.CreateDirectory(DATA_PATH);
+
+                return DATA_PATH + "billing.json";
+            }
+        }
+
+        private static string SAVE_WORKITEMS
         {
             get
             {
@@ -66,28 +101,43 @@ namespace InvoiceGenerator
         public void SaveBilling(BillingObject saveData)
         {
             // Save all the current data so we can access it later
-            WriteObject(saveData, BILLING_PATH);
+            WriteObject(saveData, BILLING);
         }
 
         public BillingObject LoadBilling()
         {
             // Load any existing data
-            return ReadObject<BillingObject>(BILLING_PATH);
+            return ReadObject<BillingObject>(BILLING);
+        }
+
+        public void SaveClient(Client client, DataObject saveData)
+        {
+            WriteObject(client, BILLING_PATH + client.name + ".json");
+            WriteObject(saveData, SAVE_PATH + client.name + "-workItems.json");
+        }
+
+        public void SaveContractor(Contractor client)
+        {
+            WriteObject(client, BILLING_PATH + "contractorData.json");
         }
 
         public void SaveData(DataObject saveData)
         {
             // Save all the current data so we can access it later
-            WriteObject(saveData, SAVE_PATH);
+            WriteObject(saveData, SAVE_WORKITEMS);
         }
 
         public DataObject LoadData()
         {
             // Load any existing data
-            return ReadObject<DataObject>(SAVE_PATH);
+            return ReadObject<DataObject>(SAVE_WORKITEMS);
         }
     }
 
+    /// <summary>
+    /// To be simplified much much farther. Perhaps even depricated.
+    /// </summary>
+    [Obsolete("BillingObject is deprecated, please use Contractor and Client objects instead.")]
     public class BillingObject
     {
         public string invoiceDirectory;
@@ -105,7 +155,30 @@ namespace InvoiceGenerator
         public string billingContact = "PHONE eMail";
 
         public int invoiceNumber = 1;
+
         public double chargePerHour = 10;
+    }
+
+    [Serializable]
+    public class Contractor : Person
+    {
+        public string invoiceDirectory;
+    }
+
+    [Serializable]
+    public class Client : Person
+    {
+        public int invoiceNumber = 1;
+
+        public double chargePerHour = 10;
+    }
+
+    [Serializable]
+    public class Person
+    {
+        public string name = "Anony Mous";
+        public string address = "12435 se street ave, City ZIP";
+        public string contact = "PHONE/eMail";
     }
 
     public class DataObject

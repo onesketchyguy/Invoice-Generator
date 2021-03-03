@@ -1,22 +1,37 @@
-﻿// Deprecated
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
-
-/* New
+using iText.IO.Font.Constants;
+using iText.Kernel.Colors;
+using iText.Kernel.Font;
+using iText.Kernel.Geom;
 using iText.Kernel.Pdf;
+using iText.Kernel.Pdf.Canvas.Draw;
 using iText.Layout;
+using iText.Layout.Borders;
 using iText.Layout.Element;
 using iText.Layout.Properties;
- */
 
 namespace InvoiceGenerator
 {
     public class DocumentManager
     {
         public Dictionary<string, double> workLogs = new Dictionary<string, double>();
+
+        public float FontSize = 20;
+
+        private PdfFont standardFont;
+        private PdfFont boldFont;
+
+        private bool fontsInitialized;
+
+        private void InitializeFonts()
+        {
+            standardFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA);
+            boldFont = PdfFontFactory.CreateFont(StandardFonts.HELVETICA_BOLD);
+
+            fontsInitialized = true;
+        }
 
         public void AddWorkLog(string description, double value)
         {
@@ -59,164 +74,216 @@ namespace InvoiceGenerator
             }
         }
 
+        private void SetFont(ref Paragraph paragraph, bool bold, float size, bool accentColor = false)
+        {
+            SetFont(ref paragraph, bold, size, accentColor ? ColorConstants.DARK_GRAY : ColorConstants.BLACK);
+        }
+
+        private void SetFont(ref Paragraph paragraph, bool bold, float size, Color color)
+        {
+            if (!fontsInitialized) InitializeFonts();
+
+            paragraph.SetFontSize(FontSize * size);
+            paragraph.SetFontColor(color);
+
+            paragraph.SetFont(bold ? boldFont : standardFont);
+        }
+
+        private void AddParagraph(ref Paragraph paragraph, ref Document document)
+        {
+            document.Add(paragraph);
+            paragraph = new Paragraph();
+        }
+
+        private void AddWorkItems(ref Document document)
+        {
+            // Table
+            Table table = new Table(2, true);
+
+            Cell cellHeaderLeft = new Cell(1, 1)
+               .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+               .SetTextAlignment(TextAlignment.CENTER)
+               .Add(new Paragraph("DESCRIPTION OF WORK"));
+            Cell cellHeaderRight = new Cell(1, 1)
+               .SetBackgroundColor(ColorConstants.LIGHT_GRAY)
+               .SetTextAlignment(TextAlignment.CENTER)
+               .Add(new Paragraph("HOURS WORKED"));
+
+            table.AddCell(cellHeaderLeft);
+            table.AddCell(cellHeaderRight);
+
+            foreach (var item in workLogs)
+            {
+                Cell left = new Cell(1, 1)
+                   .SetTextAlignment(TextAlignment.CENTER)
+                   .Add(new Paragraph($"{item.Key}"));
+                Cell right = new Cell(1, 1)
+                   .SetTextAlignment(TextAlignment.CENTER)
+                   .Add(new Paragraph($"{item.Value}"));
+
+                table.AddCell(left);
+                table.AddCell(right);
+            }
+
+            document.Add(table);
+
+            /*
+            var paragraph = new Paragraph();
+            SetFont(ref paragraph, true, 0.6f, true);
+            paragraph.SetTextAlignment(TextAlignment.CENTER);
+
+            document.Add(new Cell());
+
+            paragraph.Add("WORK ITEMS ARE AS FOLLOWS:");
+
+            AddParagraph(ref paragraph, ref document);
+
+            paragraph.SetMarginLeft(10);
+            paragraph.SetMarginRight(10);
+            paragraph.SetTextAlignment(TextAlignment.LEFT);
+
+            // Add all work items
+            foreach (var item in workLogs)
+            {
+                SetFont(ref paragraph, true, 0.55f);
+                paragraph.Add($"•{item.Key}");
+
+                SetFont(ref paragraph, false, 0.5f);
+                paragraph.Add($"   for   ");
+
+                SetFont(ref paragraph, true, 0.55f);
+                paragraph.Add($"{item.Value}");
+
+                SetFont(ref paragraph, true, 0.5f);
+                paragraph.Add($"   hours.\n");
+            }
+
+            AddParagraph(ref paragraph, ref document);*/
+        }
+
         public void CreateDocument(double totalHoursWorked)
         {
-            double totalCharge = totalHoursWorked * data.chargePerHour;
+            double totalCharge = Math.Round(totalHoursWorked * data.chargePerHour, 2);
 
-            var lineSeparator = new iTextSharp.text.pdf.draw.LineSeparator(1f, 100f, BaseColor.BLACK, Element.ALIGN_LEFT, 1);
-            var line = new Chunk(lineSeparator);
+            var lineSeparator = new LineSeparator(new SolidLine());
 
-            void SetFont(ref Paragraph paragraph, bool bold, int size, bool accentColor = false)
-            {
-                paragraph.Font = FontFactory.GetFont(bold ? FontFactory.HELVETICA_BOLD : FontFactory.HELVETICA, size, accentColor ? BaseColor.DARK_GRAY : BaseColor.BLACK);
-            }
+            // Open the document
+            PdfWriter writer = new PdfWriter(PDF_DIRECTORY);
+            PdfDocument pdf = new PdfDocument(writer);
+            Document document = new Document(pdf, PageSize.A4);
 
-            void AddParagraph(ref Paragraph paragraph, ref Document document)
-            {
-                document.Add(paragraph);
-                paragraph.Clear();
-            }
+            Paragraph paragraph = new Paragraph();
+            paragraph.SetBorder(Border.NO_BORDER);
+            paragraph.SetMarginLeft(20);
+            paragraph.SetMarginRight(20);
 
-            using (MemoryStream memoryStream = new MemoryStream())
-            {
-                Document document = new Document(PageSize.A4, 10, 10, 10, 10);
+            paragraph.SetTextAlignment(TextAlignment.RIGHT);
 
-                PdfWriter writer = PdfWriter.GetInstance(document, memoryStream);
-                document.Open();
+            // Date the document
+            SetFont(ref paragraph, false, 0.4f, true);
+            paragraph.Add($"DATE ");
+            SetFont(ref paragraph, true, 0.5f);
+            paragraph.Add($"{DateTime.Now.ToString("dd")}-{DateTime.Now.ToString("MMM")}-{DateTime.Now.Year}");
 
-                Paragraph paragraph = new Paragraph();
-                paragraph.IndentationLeft = 20;
-                paragraph.IndentationRight = 20;
-                paragraph.Alignment = Element.ALIGN_RIGHT;
+            AddParagraph(ref paragraph, ref document);
 
-                // Date the document
-                SetFont(ref paragraph, false, 8, true);
-                paragraph.Add($"DATE ");
-                SetFont(ref paragraph, true, 10);
-                paragraph.Add($"{DateTime.Now.ToString("dd")}-{DateTime.Now.ToString("MMM")}-{DateTime.Now.Year}");
+            paragraph.SetTextAlignment(TextAlignment.RIGHT);
 
-                AddParagraph(ref paragraph, ref document);
+            SetFont(ref paragraph, true, 0.5f, true);
+            paragraph.Add($"INVOICE_{data.invoiceNumber}");
 
-                SetFont(ref paragraph, true, 10, true);
-                paragraph.Add($"INVOICE_{data.invoiceNumber}");
+            AddParagraph(ref paragraph, ref document);
 
-                AddParagraph(ref paragraph, ref document);
+            document.Add(lineSeparator);
 
-                document.Add(line);
+            // Detail who is billing
+            paragraph.SetTextAlignment(TextAlignment.LEFT);
 
-                // Detail who is billing
-                paragraph.Alignment = Element.ALIGN_LEFT;
+            SetFont(ref paragraph, false, 0.5f, true);
+            paragraph.Add("BILL FROM");
+            AddParagraph(ref paragraph, ref document);
 
-                SetFont(ref paragraph, false, 10, true);
-                paragraph.Add("BILL FROM\n");
+            SetFont(ref paragraph, true, .8f);
+            paragraph.Add(data.biller);
 
-                SetFont(ref paragraph, true, 16);
-                paragraph.Add(data.biller);
+            AddParagraph(ref paragraph, ref document);
 
-                AddParagraph(ref paragraph, ref document);
+            SetFont(ref paragraph, false, .7f);
+            paragraph.Add(data.billerAddress);
+            paragraph.Add(data.billerContact);
 
-                SetFont(ref paragraph, false, 14);
-                paragraph.Add(data.billerAddress);
-                paragraph.Add(data.billerContact);
+            AddParagraph(ref paragraph, ref document);
 
-                AddParagraph(ref paragraph, ref document);
+            document.Add(lineSeparator);
 
-                document.Add(line);
+            // Explain who we're billing
+            SetFont(ref paragraph, false, 0.5f, true);
+            paragraph.Add("BILL TO");
+            AddParagraph(ref paragraph, ref document);
 
-                // Explain who we're billing
-                SetFont(ref paragraph, false, 10, true);
-                paragraph.Add("BILL TO\n");
+            SetFont(ref paragraph, true, .8f);
+            paragraph.Add(data.billing);
 
-                SetFont(ref paragraph, true, 16);
-                paragraph.Add(data.billing);
+            AddParagraph(ref paragraph, ref document);
 
-                AddParagraph(ref paragraph, ref document);
+            SetFont(ref paragraph, false, .7f);
+            paragraph.Add(data.billingAddress);
+            paragraph.Add(data.billingContact);
 
-                SetFont(ref paragraph, false, 14);
-                paragraph.Add(data.billingAddress);
-                paragraph.Add(data.billingContact);
+            AddParagraph(ref paragraph, ref document);
 
-                AddParagraph(ref paragraph, ref document);
+            document.Add(lineSeparator);
+            document.Add(new Cell());
 
-                document.Add(line);
-                document.Add(new Chunk("\n"));
+            // Add work items
+            AddWorkItems(ref document);
 
-                // Add work items
-                paragraph.Clear();
-                SetFont(ref paragraph, true, 12, true);
-                paragraph.Alignment = Element.ALIGN_CENTER;
+            document.Add(lineSeparator);
 
-                document.Add(new Chunk("\n"));
+            // Display costs
+            paragraph.SetMarginTop(20);
+            paragraph.SetMarginBottom(20);
 
-                paragraph.Add("WORK ITEMS ARE AS FOLLOWS:");
+            paragraph.SetTextAlignment(TextAlignment.RIGHT);
 
-                AddParagraph(ref paragraph, ref document);
+            SetFont(ref paragraph, true, 0.6f, true);
+            paragraph.Add($"TOTAL WORK HOURS: ");
+            SetFont(ref paragraph, true, 0.75f);
+            paragraph.Add($"{totalHoursWorked}\n");
 
-                paragraph.SpacingBefore = 10;
-                paragraph.SpacingAfter = 10;
-                paragraph.Alignment = Element.ALIGN_LEFT;
+            SetFont(ref paragraph, true, 0.6f, true);
+            paragraph.Add($"CHARGE PER HOUR: ");
+            SetFont(ref paragraph, true, 0.75f);
+            paragraph.Add($"${data.chargePerHour}\n");
 
-                foreach (var item in workLogs)
-                {
-                    SetFont(ref paragraph, true, 11);
-                    paragraph.Add($"•{item.Key}");
+            SetFont(ref paragraph, true, 0.6f, true);
+            paragraph.Add($"SUBTOTAL: ");
+            SetFont(ref paragraph, true, 0.75f);
+            paragraph.Add($"${totalCharge}\n");
 
-                    SetFont(ref paragraph, false, 10);
-                    paragraph.Add($"   for   ");
+            AddParagraph(ref paragraph, ref document);
 
-                    SetFont(ref paragraph, true, 11);
-                    paragraph.Add($"{item.Value}");
+            document.Add(lineSeparator);
 
-                    SetFont(ref paragraph, true, 10);
-                    paragraph.Add($"   hours.\n");
-                }
+            // Add an empty line
+            AddParagraph(ref paragraph, ref document);
 
-                AddParagraph(ref paragraph, ref document);
+            paragraph.SetTextAlignment(TextAlignment.RIGHT);
+            SetFont(ref paragraph, true, 1.0f, ColorConstants.RED);
+            paragraph.Add($"BALANCE DUE: ${totalCharge}");
 
-                // Display costs
-                paragraph.SpacingBefore = 20;
-                paragraph.SpacingAfter = 20;
-                paragraph.Alignment = Element.ALIGN_RIGHT;
+            AddParagraph(ref paragraph, ref document);
 
-                SetFont(ref paragraph, true, 12, true);
-                paragraph.Add($"TOTAL WORK HOURS: ");
-                SetFont(ref paragraph, true, 15);
-                paragraph.Add($"{totalHoursWorked}\n");
+            // Add trade marks
+            /*document.AddAuthor("Forrest Lowe 2020-2021");
+            document.AddCreator("Forrest Lowe 2020-2021");
+            document.AddCreationDate();
+            document.AddTitle($"Invoice_{data.invoiceNumber}");
+            document.AddSubject($"Invoice_{data.invoiceNumber}");
+            document.AddLanguage("English(US)");*/
 
-                SetFont(ref paragraph, true, 12, true);
-                paragraph.Add($"CHARGE PER HOUR: ");
-                SetFont(ref paragraph, true, 15);
-                paragraph.Add($"${data.chargePerHour}\n");
-
-                SetFont(ref paragraph, true, 12, true);
-                paragraph.Add($"SUBTOTAL: ");
-                SetFont(ref paragraph, true, 15);
-                paragraph.Add($"${totalCharge}\n");
-
-                AddParagraph(ref paragraph, ref document);
-
-                document.Add(line);
-
-                paragraph.Font = FontFactory.GetFont(FontFactory.HELVETICA_BOLD, 25f, BaseColor.RED);
-                paragraph.Add($"BALANCE DUE: ${totalCharge}");
-
-                document.Add(paragraph);
-
-                // Add trade marks
-                document.AddAuthor("Forrest Lowe 2020");
-                document.AddCreator("Forrest Lowe 2020");
-                document.AddCreationDate();
-                document.AddTitle($"Invoice_{data.invoiceNumber}");
-                document.AddSubject($"Invoice_{data.invoiceNumber}");
-                document.AddLanguage("English(US)");
-
-                // Finish off and close the document
-                document.Close();
-                byte[] bytes = memoryStream.ToArray();
-                File.WriteAllBytes(PDF_DIRECTORY, bytes);
-
-                memoryStream.Close();
-            }
+            // Finish off and close the document
+            document.Close();
         }
     }
 }

@@ -10,20 +10,11 @@
         "dependencies": {
           "Newtonsoft.Json": "12.0.3",
           "Simplify.Windows.Forms": "1.1.0",
-          "System.Drawing.Common": "5.0.0",
-          "iTextSharp": "5.5.13.2",
-          "itext7": "7.1.13"
+          "System.Drawing.Common": "5.0.1",
+          "itext7": "7.1.14"
         },
         "runtime": {
           "InvoiceGenerator.dll": {}
-        }
-      },
-      "BouncyCastle/1.8.6.1": {
-        "runtime": {
-          "lib/BouncyCastle.Crypto.dll": {
-            "assemblyVersion": "1.8.6.0",
-            "fileVersion": "1.8.20052.1"
-          }
         }
       },
       "Common.Logging/3.4.1": {
@@ -55,11 +46,11 @@
           }
         }
       },
-      "itext7/7.1.13": {
+      "itext7/7.1.14": {
         "dependencies": {
           "Common.Logging": "3.4.1",
           "Microsoft.Extensions.DependencyModel": "1.1.0",
-          "Portable.BouncyCastle": "1.8.5",
+          "Portable.BouncyCastle": "1.8.9",
           "System.Collections.NonGeneric": "4.3.0",
           "System.Diagnostics.Process": "4.3.0",
           "System.Globalization.Extensions": "4.3.0",
@@ -73,52 +64,41 @@
           "System.Xml.XmlDocument": "4.3.0"
         },
         "runtime": {
-          "lib/netstandard1.6/itext.barcodes.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
+          "lib/netstandard2.0/itext.barcodes.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           },
-          "lib/netstandard1.6/itext.forms.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
+          "lib/netstandard2.0/itext.forms.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           },
-          "lib/netstandard1.6/itext.io.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
+          "lib/netstandard2.0/itext.io.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           },
-          "lib/netstandard1.6/itext.kernel.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
+          "lib/netstandard2.0/itext.kernel.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           },
-          "lib/netstandard1.6/itext.layout.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
+          "lib/netstandard2.0/itext.layout.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           },
-          "lib/netstandard1.6/itext.pdfa.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
+          "lib/netstandard2.0/itext.pdfa.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           },
-          "lib/netstandard1.6/itext.sign.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
+          "lib/netstandard2.0/itext.sign.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           },
-          "lib/netstandard1.6/itext.styledxmlparser.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
+          "lib/netstandard2.0/itext.styledxmlparser.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           },
-          "lib/netstandard1.6/itext.svg.dll": {
-            "assemblyVersion": "7.1.13.0",
-            "fileVersion": "7.1.13.0"
-          }
-        }
-      },
-      "iTextSharp/5.5.13.2": {
-        "dependencies": {
-          "BouncyCastle": "1.8.6.1"
-        },
-        "runtime": {
-          "lib/itextsharp.dll": {
-            "assemblyVersion": "5.5.13.2",
-            "fileVersion": "5.5.13.2"
+          "lib/netstandard2.0/itext.svg.dll": {
+            "assemblyVersion": "7.1.14.0",
+            "fileVersion": "7.1.14.0"
           }
         }
       },
@@ -223,7 +203,14 @@
           }
         }
       },
-      "Portable.BouncyCastle/1.8.5": {},
+      "Portable.BouncyCastle/1.8.9": {
+        "runtime": {
+          "lib/netstandard2.0/BouncyCastle.Crypto.dll": {
+            "assemblyVersion": "1.8.9.0",
+            "fileVersion": "1.8.9.1"
+          }
+        }
+      },
       "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.fedora.23-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
       "runtime.fedora.24-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {},
@@ -369,28 +356,28 @@
           "System.Runtime": "4.3.0"
         }
       },
-      "System.Drawing.Common/5.0.0": {
+      "System.Drawing.Common/5.0.1": {
         "dependencies": {
           "Microsoft.Win32.SystemEvents": "5.0.0"
         },
         "runtime": {
           "lib/netcoreapp3.0/System.Drawing.Common.dll": {
-            "assemblyVersion": "5.0.0.0",
-            "fileVersion": "5.0.20.51904"
+            "assemblyVersion": "5.0.0.1",
+            "fileVersion": "5.0.321.7212"
           }
         },
         "runtimeTargets": {
           "runtimes/unix/lib/netcoreapp3.0/System.Drawing.Common.dll": {
             "rid": "unix",
             "assetType": "runtime",
-            "assemblyVersion": "5.0.0.0",
-            "fileVersion": "5.0.20.51904"
+            "assemblyVersion": "5.0.0.1",
+            "fileVersion": "5.0.321.7212"
           },
           "runtimes/win/lib/netcoreapp3.0/System.Drawing.Common.dll": {
             "rid": "win",
             "assetType": "runtime",
-            "assemblyVersion": "5.0.0.0",
-            "fileVersion": "5.0.20.51904"
+            "assemblyVersion": "5.0.0.1",
+            "fileVersion": "5.0.321.7212"
           }
         }
       },
@@ -931,13 +918,6 @@
       "serviceable": false,
       "sha512": ""
     },
-    "BouncyCastle/1.8.6.1": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-rkqpuKmJkdcfTMBkIj1b5nMdBAWKwAyh+I/BQYeqqSD2jkIlhwc9qBNKmSbnpmmm5c29qHZGLpvBSTNWvDLtQA==",
-      "path": "bouncycastle/1.8.6.1",
-      "hashPath": "bouncycastle.1.8.6.1.nupkg.sha512"
-    },
     "Common.Logging/3.4.1": {
       "type": "package",
       "serviceable": true,
@@ -952,19 +932,12 @@
       "path": "common.logging.core/3.4.1",
       "hashPath": "common.logging.core.3.4.1.nupkg.sha512"
     },
-    "itext7/7.1.13": {
+    "itext7/7.1.14": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-QCGOQtzr4EB+co2U/JmefiAjmU3f2c0c73QCJR95b5rcz9KR5qcbv9jtOfJn/7f6nTZPaTdO2hmgOMM6QvLGKw==",
-      "path": "itext7/7.1.13",
-      "hashPath": "itext7.7.1.13.nupkg.sha512"
-    },
-    "iTextSharp/5.5.13.2": {
-      "type": "package",
-      "serviceable": true,
-      "sha512": "sha512-8m9oT1nh9F4Z1tzWUey/8lEzZtMGFCDXQY5+8/SSmPgUWAAAWniRo8pimKUZyteNqJr5vtFBxjAhRwLxG7Q0zQ==",
-      "path": "itextsharp/5.5.13.2",
-      "hashPath": "itextsharp.5.5.13.2.nupkg.sha512"
+      "sha512": "sha512-qqra61RJH3RWBkYTvrPVQpcYpkam4NihxgsfE+3NtJ9ZySwJT+TUogEdveL+PfJtqmtbou2SHbkRU606E7N03w==",
+      "path": "itext7/7.1.14",
+      "hashPath": "itext7.7.1.14.nupkg.sha512"
     },
     "Microsoft.CSharp/4.0.1": {
       "type": "package",
@@ -1029,12 +1002,12 @@
       "path": "newtonsoft.json/12.0.3",
       "hashPath": "newtonsoft.json.12.0.3.nupkg.sha512"
     },
-    "Portable.BouncyCastle/1.8.5": {
+    "Portable.BouncyCastle/1.8.9": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-EaCgmntbH1sOzemRTqyXSqYjB6pLH7VCYHhhDYZ59guHSD5qPwhIYa7kfy0QUlmTRt9IXhaXdFhNuBUArp70Ng==",
-      "path": "portable.bouncycastle/1.8.5",
-      "hashPath": "portable.bouncycastle.1.8.5.nupkg.sha512"
+      "sha512": "sha512-wlJo8aFoeyl+W93iFXTK5ShzDYk5WBqoUPjTNEM0Xv9kn1H+4hmuCjF0/n8HLm9Nnp1aY6KNndWqQTNk+NGgRQ==",
+      "path": "portable.bouncycastle/1.8.9",
+      "hashPath": "portable.bouncycastle.1.8.9.nupkg.sha512"
     },
     "runtime.debian.8-x64.runtime.native.System.Security.Cryptography.OpenSsl/4.3.0": {
       "type": "package",
@@ -1211,12 +1184,12 @@
       "path": "system.diagnostics.tracing/4.3.0",
       "hashPath": "system.diagnostics.tracing.4.3.0.nupkg.sha512"
     },
-    "System.Drawing.Common/5.0.0": {
+    "System.Drawing.Common/5.0.1": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-SztFwAnpfKC8+sEKXAFxCBWhKQaEd97EiOL7oZJZP56zbqnLpmxACWA8aGseaUExciuEAUuR9dY8f7HkTRAdnw==",
-      "path": "system.drawing.common/5.0.0",
-      "hashPath": "system.drawing.common.5.0.0.nupkg.sha512"
+      "sha512": "sha512-3IN8zWk395Qu+7wnoTbebEjdP3izZBBKAahgWuC0jp9tCgTdUFN6KsrqQl0I3L+ptZD/LvwKjgFp1u+x3+p+DA==",
+      "path": "system.drawing.common/5.0.1",
+      "hashPath": "system.drawing.common.5.0.1.nupkg.sha512"
     },
     "System.Dynamic.Runtime/4.0.11": {
       "type": "package",

@@ -3,7 +3,7 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
-    <Copyright>Forrest Lowe 2020</Copyright>
+    <Copyright>Forrest Lowe 2020-2021</Copyright>
     <Authors>Forrest Lowe</Authors>
     <Product>Invoice Generator</Product>
     <PackageId>InvoiceGenerator</PackageId>
@@ -25,15 +25,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="itext7" Version="7.1.13" />
-    <PackageReference Include="iTextSharp" Version="5.5.13.2" />
+    <PackageReference Include="itext7" Version="7.1.14" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
     <PackageReference Include="Simplify.Windows.Forms" Version="1.1.0" />
-    <PackageReference Include="System.Drawing.Common" Version="5.0.0" />
+    <PackageReference Include="System.Drawing.Common" Version="5.0.1" />
   </ItemGroup>
 
   <ItemGroup>
     <Resource Include="Properties\dosapp.fon" />
   </ItemGroup>
-
 </Project>

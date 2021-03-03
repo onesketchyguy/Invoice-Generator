@@ -53,7 +53,6 @@ C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Release\netco
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Release\netcoreapp3.1\itext.sign.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Release\netcoreapp3.1\itext.styledxmlparser.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Release\netcoreapp3.1\itext.svg.dll
-C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Release\netcoreapp3.1\itextsharp.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Release\netcoreapp3.1\Microsoft.DotNet.PlatformAbstractions.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Release\netcoreapp3.1\Microsoft.Extensions.DependencyModel.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Release\netcoreapp3.1\Microsoft.Win32.SystemEvents.dll
