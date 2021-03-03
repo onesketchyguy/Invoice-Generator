@@ -7,6 +7,8 @@ namespace InvoiceGenerator
 {
     public class DisplayWindow : Form
     {
+        public const string version = "0.1.7";
+
         private DocumentManager document;
         private JsonManager saveManager;
         private BillingObject data;
@@ -58,92 +60,123 @@ namespace InvoiceGenerator
 
             toolbar.ItemClicked += Toolbar_ItemClicked;
 
-            // Input box
-            var descriptionBoxHeader = new TextBox();
-            descriptionBoxHeader.Parent = this;
-            descriptionBoxHeader.Enabled = false;
-            descriptionBoxHeader.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            descriptionBoxHeader.Size = new Size(300, 50);
-            descriptionBoxHeader.Location = new Point(0, 25);
-            descriptionBoxHeader.PlaceholderText = "Description of work";
-            descriptionBoxHeader.ForeColor = Color.Black;
+            // Version box
+            var versionText = new TextBox()
+            {
+                Parent = this,
+                Enabled = false,
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
+                Size = new Size(100, 50),
+                Location = new Point(0, Size.Height - 60),
+                ForeColor = Color.Black,
+                PlaceholderText = $"version: {version}"
+            };
 
-            inputBox = new TextBox();
-            inputBox.Parent = this;
-            inputBox.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            inputBox.Size = new Size(300, 50);
-            inputBox.Location = new Point(0, 50);
-            inputBox.PlaceholderText = "Description";
-            inputBox.ForeColor = Color.Black;
+            // Input box
+            var descriptionBoxHeader = new TextBox()
+            {
+                Parent = this,
+                Enabled = false,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                Size = new Size(300, 50),
+                Location = new Point(0, 25),
+                ForeColor = Color.Black,
+                PlaceholderText = "Description of work"
+            };
+
+            inputBox = new TextBox()
+            {
+                Parent = this,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                Size = new Size(300, 50),
+                Location = new Point(0, 50),
+                ForeColor = Color.Black,
+                PlaceholderText = "Description"
+            };
 
             // Work hours input
-            var workBoxHeader = new TextBox();
-            workBoxHeader.Parent = this;
-            workBoxHeader.Enabled = false;
-            workBoxHeader.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            workBoxHeader.Size = new Size(300, 75);
-            workBoxHeader.Location = new Point(0, 75);
-            workBoxHeader.PlaceholderText = "Worked hours";
-            workBoxHeader.ForeColor = Color.Black;
+            var workBoxHeader = new TextBox()
+            {
+                Parent = this,
+                Enabled = false,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                Size = new Size(300, 75),
+                Location = new Point(0, 75),
+                ForeColor = Color.Black,
+                PlaceholderText = "Worked hours",
+            };
 
-            workedHoursInput = new TextBox();
-            workedHoursInput.Parent = this;
-            workedHoursInput.Anchor = AnchorStyles.Top | AnchorStyles.Left;
-            workedHoursInput.Size = new Size(300, 50);
-            workedHoursInput.Location = new Point(0, 100);
-            workedHoursInput.PlaceholderText = "0.0";
-            workedHoursInput.ForeColor = Color.Black;
+            workedHoursInput = new TextBox()
+            {
+                Parent = this,
+                Anchor = AnchorStyles.Top | AnchorStyles.Left,
+                Size = new Size(300, 50),
+                Location = new Point(0, 100),
+                ForeColor = Color.Black,
+                PlaceholderText = "0.0",
+            };
+
             workedHoursInput.TextChanged += WorkedHours_TextChanged;
 
             // Show work
-            workedItemsDisplay = new FlowLayoutPanel();
-            workedItemsDisplay.Parent = this;
-            workedItemsDisplay.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            workedItemsDisplay.Size = new Size(200, 300);
-            workedItemsDisplay.Location = new Point(600, 25);
-            workedItemsDisplay.ForeColor = Color.Black;
-            workedItemsDisplay.BackColor = Color.LightBlue;
-            workedItemsDisplay.AutoScroll = true;
+            workedItemsDisplay = new FlowLayoutPanel()
+            {
+                Parent = this,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Size = new Size(200, 300),
+                Location = new Point(600, 25),
+                ForeColor = Color.Black,
+                BackColor = Color.LightBlue,
+                AutoScroll = true
+            };
 
-            totalHoursWorkedDisplay = new TextBox();
-            totalHoursWorkedDisplay.Parent = this;
-            totalHoursWorkedDisplay.Enabled = false;
-            totalHoursWorkedDisplay.Anchor = AnchorStyles.Bottom;
-            totalHoursWorkedDisplay.Size = new Size(200, 50);
-            totalHoursWorkedDisplay.Location = new Point(600, 350);
-            totalHoursWorkedDisplay.PlaceholderText = "0.0";
-            totalHoursWorkedDisplay.ForeColor = Color.Black;
+            totalHoursWorkedDisplay = new TextBox()
+            {
+                Parent = this,
+                Enabled = false,
+                Anchor = AnchorStyles.Bottom,
+                Size = new Size(200, 50),
+                Location = new Point(600, 350),
+                ForeColor = Color.Black,
+                PlaceholderText = "0.0",
+            };
 
-            totalChargeDisplay = new TextBox();
-            totalChargeDisplay.Parent = this;
-            totalChargeDisplay.Enabled = false;
-            totalChargeDisplay.Anchor = AnchorStyles.Bottom;
-            totalChargeDisplay.Size = new Size(200, 50);
-            totalChargeDisplay.Location = new Point(600, 380);
-            totalChargeDisplay.PlaceholderText = "0.0";
-            totalChargeDisplay.ForeColor = Color.Black;
+            totalChargeDisplay = new TextBox()
+            {
+                Parent = this,
+                Enabled = false,
+                Anchor = AnchorStyles.Bottom,
+                Size = new Size(200, 50),
+                Location = new Point(600, 380),
+                ForeColor = Color.Black,
+                PlaceholderText = "0.0",
+            };
 
             // Add work button
-            var addWorkButton = new Button();
-            addWorkButton.Parent = workedItemsDisplay;
-            addWorkButton.Size = new Size(180, 50);
-            addWorkButton.Text = "Add work";
-            addWorkButton.ForeColor = Color.Black;
-            addWorkButton.BackColor = Color.Lime;
+            var addWorkButton = new Button()
+            {
+                Parent = workedItemsDisplay,
+                Size = new Size(180, 50),
+                ForeColor = Color.Black,
+                BackColor = Color.Lime,
+                Text = "Add work",
+            };
 
             addWorkButton.Click += (object sender, EventArgs e) => AddWork();
 
             // Remove work button
-            removeWorkButton = new Button();
-            removeWorkButton.Parent = this;
-            removeWorkButton.Enabled = false;
-            removeWorkButton.Visible = false;
-            removeWorkButton.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            removeWorkButton.Location = new Point(480, 80);
-            removeWorkButton.Size = new Size(100, 35);
-            removeWorkButton.Text = "Delete work log";
-            removeWorkButton.ForeColor = Color.Black;
-            removeWorkButton.BackColor = Color.IndianRed;
+            removeWorkButton = new Button()
+            {
+                Parent = this,
+                Enabled = false,
+                Visible = false,
+                Anchor = AnchorStyles.Top | AnchorStyles.Right,
+                Location = new Point(480, 80),
+                Size = new Size(100, 35),
+                ForeColor = Color.Black,
+                BackColor = Color.IndianRed,
+                Text = "Delete work log",
+            };
 
             removeWorkButton.Click += (object sender, EventArgs e) =>
             {
