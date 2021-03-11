@@ -1,6 +1,8 @@
-﻿using Microsoft.VisualBasic.FileIO;
+﻿// Forrest Lowe 2020-2021
+using Microsoft.VisualBasic.FileIO;
 using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 
 namespace InvoiceGenerator
@@ -110,6 +112,42 @@ namespace InvoiceGenerator
             return ReadObject<BillingObject>(BILLING);
         }
 
+        public Client[] LoadClients()
+        {
+            var clients = new List<Client>();
+
+            foreach (var path in Directory.EnumerateFiles(BILLING_PATH))
+            {
+                // Skip the contractor data
+                if (path.Contains("contractorData")) continue;
+                var client = ReadObject<Client>(path);
+
+                clients.Add(client);
+            }
+
+            return clients.ToArray();
+        }
+
+        public Client LoadClient(string name)
+        {
+            var clients = LoadClients();
+
+            foreach (var client in clients)
+            {
+                if (client.name.ToLower() == name.ToLower())
+                {
+                    return client;
+                }
+            }
+
+            return null;
+        }
+
+        public Contractor LoadContractor()
+        {
+            return ReadObject<Contractor>(BILLING_PATH + "contractorData.json");
+        }
+
         public void SaveClient(Client client, DataObject saveData)
         {
             WriteObject(client, BILLING_PATH + client.name + ".json");
@@ -125,6 +163,12 @@ namespace InvoiceGenerator
         {
             // Save all the current data so we can access it later
             WriteObject(saveData, SAVE_WORKITEMS);
+        }
+
+        public DataObject LoadData(string clientName)
+        {
+            // Load any existing data
+            return ReadObject<DataObject>(SAVE_PATH + $"{clientName}-workItems.json");
         }
 
         public DataObject LoadData()

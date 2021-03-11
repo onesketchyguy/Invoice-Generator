@@ -1,10 +1,111 @@
-﻿using System;
+﻿// Forrest Lowe 2020-2021
+using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
 namespace InvoiceGenerator.InputPropmts
 {
+    public class ContractorFirstLaunchSurvey : Form
+    {
+        public delegate void OnFinishedSurvey(Contractor data);
+
+        public static OnFinishedSurvey onFinishedSurveyCallback;
+
+        private Contractor data;
+
+        public ContractorFirstLaunchSurvey(Contractor loadData, OnFinishedSurvey onFinished)
+        {
+            onFinishedSurveyCallback += onFinished;
+
+            this.Size = new Size(350, 350);
+            this.Text = "Billing information:";
+
+            data = loadData;
+
+            // Biller
+            TextBox billerTitle = new TextBox();
+            billerTitle.Parent = this;
+            billerTitle.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            billerTitle.Size = new Size(300, 50);
+            billerTitle.Location = new Point(0, 25);
+            billerTitle.Text = "BILLER";
+            billerTitle.ForeColor = Color.Black;
+            billerTitle.Enabled = false;
+
+            // Name
+            TextBox biller_nameInput = new TextBox();
+            biller_nameInput.Parent = this;
+            biller_nameInput.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            biller_nameInput.Size = new Size(300, 50);
+            biller_nameInput.Location = new Point(0, 50);
+            biller_nameInput.PlaceholderText = "Name";
+            biller_nameInput.Text = data.name;
+            biller_nameInput.ForeColor = Color.Black;
+            biller_nameInput.TextChanged += Biller_nameInput_TextChanged;
+
+            // Address
+            TextBox biller_addyInput = new TextBox();
+            biller_addyInput.Parent = this;
+            biller_addyInput.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            biller_addyInput.Size = new Size(300, 50);
+            biller_addyInput.Location = new Point(0, 75);
+            biller_addyInput.PlaceholderText = "Address";
+            biller_addyInput.Text = data.address;
+            biller_addyInput.ForeColor = Color.Black;
+            biller_addyInput.TextChanged += Biller_addyInput_TextChanged;
+
+            // Contact
+            TextBox biller_email_phone = new TextBox();
+            biller_email_phone.Parent = this;
+            biller_email_phone.Anchor = AnchorStyles.Top | AnchorStyles.Left;
+            biller_email_phone.Size = new Size(300, 50);
+            biller_email_phone.Location = new Point(0, 100);
+            biller_email_phone.PlaceholderText = "email and phone";
+            biller_email_phone.Text = data.contact;
+            biller_email_phone.ForeColor = Color.Black;
+            biller_email_phone.TextChanged += Biller_email_phone_TextChanged;
+
+            // Finished button
+            var doneButton = new Button();
+            doneButton.Parent = this;
+            doneButton.Size = new Size(50, 25);
+            doneButton.Location = new Point(0, 125);
+            doneButton.Text = "Finished";
+            doneButton.ForeColor = Color.Black;
+            doneButton.BackColor = Color.LightGray;
+
+            doneButton.Click += DoneButton_Click;
+        }
+
+        private void Biller_nameInput_TextChanged(object sender, EventArgs e)
+        {
+            data.name = ((TextBox)sender).Text;
+        }
+
+        private void Biller_addyInput_TextChanged(object sender, EventArgs e)
+        {
+            data.address = ((TextBox)sender).Text;
+        }
+
+        private void Biller_email_phone_TextChanged(object sender, EventArgs e)
+        {
+            data.contact = ((TextBox)sender).Text;
+        }
+
+        private void DoneButton_Click(object sender, EventArgs e)
+        {
+            OnClosing(new CancelEventArgs(false));
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            onFinishedSurveyCallback?.Invoke(data);
+
+            base.OnClosing(e);
+        }
+    }
+
     public class FirstLaunchSurvey : Form
     {
         public delegate void OnFinishedSurvey(BillingObject data);

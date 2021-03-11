@@ -64,7 +64,6 @@ C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Debug\netcore
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Debug\netcoreapp3.1\runtimes\unix\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\bin\Debug\netcoreapp3.1\runtimes\win\lib\netcoreapp3.0\System.Drawing.Common.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.csprojAssemblyReference.cache
-C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.InputPropmts.FirstLaunchSurvey.resources
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.csproj.GenerateResource.cache
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.AssemblyInfoInputs.cache
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.AssemblyInfo.cs
@@ -73,3 +72,4 @@ C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcore
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.dll
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.pdb
 C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.genruntimeconfig.cache
+C:\Users\frres\source\repos\Invoice-Generator\InvoiceGenerator\obj\Debug\netcoreapp3.1\InvoiceGenerator.InputPropmts.ContractorFirstLaunchSurvey.resources

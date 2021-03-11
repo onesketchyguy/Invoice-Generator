@@ -1,4 +1,5 @@
-﻿using System;
+﻿// Forrest Lowe 2020-2021
+using System;
 using System.Collections.Generic;
 using System.IO;
 using iText.IO.Font.Constants;

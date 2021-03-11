@@ -1,4 +1,5 @@
-﻿using InvoiceGenerator.InputPropmts;
+﻿// Forrest Lowe 2020-2021
+using InvoiceGenerator.InputPropmts;
 using System;
 using System.Drawing;
 using System.Windows.Forms;
@@ -7,17 +8,33 @@ namespace InvoiceGenerator
 {
     public class DisplayWindow : Form
     {
-        public const string version = "0.1.7";
+        public const string version = "0.1.8";
 
         private DocumentManager document;
         private JsonManager saveManager;
         private BillingObject data;
+        private Contractor contractorData;
+        private Client clientData;
 
         private const string EXPORT = "Export PDF";
         private const string EXPORT_LOCATION = "Change export location";
         private const string SAVE_WORKITEMS = "Save current work items";
         private const string LOAD_WORKITEMS = "Load last work items";
         private const string MODIFY_CONTACT_INFO = "Change billing info";
+
+        // Need a button region for adding work
+        private Button removeWorkButton;
+
+        // Need a string input for describing a job
+        private TextBox inputBox;
+
+        // Need a digit input for hours worked (TO BE REPLACED BY A TIMER)
+        private TextBox workedHoursInput;
+
+        private TextBox totalHoursWorkedDisplay;
+        private TextBox totalChargeDisplay;
+
+        private TextBox debugTextObject;
 
         public static string Format(string input)
         {
@@ -45,32 +62,54 @@ namespace InvoiceGenerator
 
             data = new BillingObject();
 
+            this.Text = $"Invoice generator - version {version}";
             this.Size = new Size(800, 550);
             this.UseWaitCursor = false;
             this.BackColor = Color.AliceBlue;
 
-            // Toolbar
-            var toolbar = new ToolStrip();
-            toolbar.Parent = this;
-            toolbar.Items.Add(EXPORT);
-            toolbar.Items.Add(EXPORT_LOCATION);
-            toolbar.Items.Add(MODIFY_CONTACT_INFO);
-            toolbar.Items.Add(SAVE_WORKITEMS);
-            toolbar.Items.Add(LOAD_WORKITEMS);
-
-            toolbar.ItemClicked += Toolbar_ItemClicked;
-
-            // Version box
-            var versionText = new TextBox()
+            // Debug box
+            debugTextObject = new TextBox()
             {
                 Parent = this,
                 Enabled = false,
-                Anchor = AnchorStyles.Bottom | AnchorStyles.Left,
-                Size = new Size(100, 50),
+                Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right,
+                Size = new Size(800, 50),
                 Location = new Point(0, Size.Height - 60),
                 ForeColor = Color.Black,
-                PlaceholderText = $"version: {version}"
+                PlaceholderText = $""
             };
+
+            // Toolbar
+            var menuStrip = new MenuStrip();
+            menuStrip.Parent = this;
+
+            // HOW TO ADD A NEW MENU DROPDOWN ITEM
+            var export = new ToolStripMenuItem("Export...");
+
+            var exportPDF = new ToolStripMenuItem(EXPORT, null, new EventHandler(ExportPDF_Click));
+            var exportLocation = new ToolStripMenuItem(EXPORT_LOCATION, null, new EventHandler((object s, EventArgs e) => SetExportLocation()));
+
+            export.DropDownItems.AddRange(new ToolStripItem[] { exportPDF, exportLocation });
+            menuStrip.Items.Add(export);
+
+            // END HOW TO
+
+            //menuStrip.Items.Add(EXPORT);
+            //menuStrip.Items.Add(EXPORT_LOCATION);
+            menuStrip.Items.Add(MODIFY_CONTACT_INFO);
+
+            var workItems = new ToolStripMenuItem("Work items...");
+
+            var saveWorkItems = new ToolStripMenuItem(SAVE_WORKITEMS, null, new EventHandler((object s, EventArgs e) => SaveWorkItems()));
+            var loadWorkItems = new ToolStripMenuItem(LOAD_WORKITEMS, null, new EventHandler((object s, EventArgs e) => LoadWorkItems()));
+
+            workItems.DropDownItems.AddRange(new ToolStripItem[] { saveWorkItems, loadWorkItems });
+            menuStrip.Items.Add(workItems);
+
+            //menuStrip.Items.Add(SAVE_WORKITEMS);
+            //menuStrip.Items.Add(LOAD_WORKITEMS);
+
+            menuStrip.ItemClicked += Toolbar_ItemClicked;
 
             // Input box
             var descriptionBoxHeader = new TextBox()
@@ -191,22 +230,60 @@ namespace InvoiceGenerator
 
             // Start
             var loadData = saveManager.LoadBilling();
-            if (loadData != null)
-            {
-                // Get data
-                data = loadData;
 
-                if (string.IsNullOrEmpty(data.invoiceDirectory))
-                    SetExportLocation();
-            }
-            else // First launch
+            var clients = saveManager.LoadClients();
+            if (clients != null && clients.Length > 0)
             {
-                formContext = new MultiFormContext(this,
-                    new FirstLaunchSurvey(new BillingObject(), (BillingObject recievedData) =>
-                    {
-                        data = recievedData;
+                clientData = clients[0]; // Take the first client by default
+            }
+
+            contractorData = saveManager.LoadContractor();
+
+            if (contractorData == null && clientData == null)
+            {
+                if (loadData != null)
+                {
+                    // Get data
+                    data = loadData;
+
+                    contractorData = new Contractor();
+                    contractorData.name = data.biller;
+                    contractorData.address = data.billerAddress;
+                    contractorData.contact = data.billerContact;
+
+                    clientData = new Client();
+                    clientData.name = data.billing;
+                    clientData.address = data.billingAddress;
+                    clientData.contact = data.billingContact;
+                    clientData.chargePerHour = data.chargePerHour;
+                    clientData.invoiceNumber = data.invoiceNumber;
+
+                    if (string.IsNullOrEmpty(data.invoiceDirectory) || string.IsNullOrEmpty(contractorData.invoiceDirectory))
                         SetExportLocation();
-                    }));
+                }
+                else
+                {
+                    // First launch
+                    formContext = new MultiFormContext(this,
+                        new FirstLaunchSurvey(new BillingObject(), (BillingObject recievedData) =>
+                        {
+                            data = recievedData;
+
+                            contractorData = new Contractor();
+                            contractorData.name = data.biller;
+                            contractorData.address = data.billerAddress;
+                            contractorData.contact = data.billerContact;
+
+                            clientData = new Client();
+                            clientData.name = data.billing;
+                            clientData.address = data.billingAddress;
+                            clientData.contact = data.billingContact;
+                            clientData.chargePerHour = data.chargePerHour;
+                            clientData.invoiceNumber = data.invoiceNumber;
+
+                            SetExportLocation();
+                        }));
+                }
             }
 
             LoadWorkItems();
@@ -319,6 +396,9 @@ namespace InvoiceGenerator
 
             data.invoiceDirectory = filePath;
             saveManager.SaveBilling(data);
+
+            contractorData.invoiceDirectory = filePath;
+            saveManager.SaveContractor(contractorData);
         }
 
         private void SaveWorkItems()
@@ -339,42 +419,50 @@ namespace InvoiceGenerator
             }
 
             saveManager.SaveData(data);
+
+            saveManager.SaveClient(clientData, data);
         }
 
         private void LoadWorkItems()
         {
-            var load = saveManager.LoadData();
+            var loadData = saveManager.LoadData(clientData.name);
 
-            if (load == null || load.description == null) return;
-
-            for (int i = 0; i < load.description.Length; i++)
+            if (loadData == null || loadData.description == null)
             {
-                // Remove any existing logs
-                RemoveWork(load.description[i]);
+                // OLD METHOD, this is still here so that we can maintain
+                // backwards compatability
+                loadData = saveManager.LoadData();
 
-                // Add new logs
-                AddWorkToWorkList(load.description[i], load.value[i]);
+                if (loadData == null || loadData.description == null) return;
+
+                for (int i = 0; i < loadData.description.Length; i++)
+                {
+                    // Remove any existing logs
+                    RemoveWork(loadData.description[i]);
+
+                    // Add new logs
+                    AddWorkToWorkList(loadData.description[i], loadData.value[i]);
+                }
+            }
+            else
+            {
+                for (int i = 0; i < loadData.description.Length; i++)
+                {
+                    // Remove any existing logs
+                    RemoveWork(loadData.description[i]);
+
+                    // Add new logs
+                    AddWorkToWorkList(loadData.description[i], loadData.value[i]);
+                }
             }
         }
 
         // Need to be able to display text
         public void WriteLine(string text)
         {
-            this.Text = text;
-            this.Update();
+            debugTextObject.Text = $"{text}";
+            debugTextObject.Update();
         }
-
-        // Need a button region for adding work
-        private Button removeWorkButton;
-
-        // Need a string input for describing a job
-        private TextBox inputBox;
-
-        // Need a digit input for hours worked (TO BE REPLACED BY A TIMER)
-        private TextBox workedHoursInput;
-
-        private TextBox totalHoursWorkedDisplay;
-        private TextBox totalChargeDisplay;
 
         public void AddWork()
         {
