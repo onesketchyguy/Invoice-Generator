@@ -154,9 +154,9 @@ namespace InvoiceGenerator
             WriteObject(saveData, SAVE_PATH + client.name + "-workItems.json");
         }
 
-        public void SaveContractor(Contractor client)
+        public void SaveContractor(Contractor contractor)
         {
-            WriteObject(client, BILLING_PATH + "contractorData.json");
+            WriteObject(contractor, BILLING_PATH + "contractorData.json");
         }
 
         public void SaveData(DataObject saveData)

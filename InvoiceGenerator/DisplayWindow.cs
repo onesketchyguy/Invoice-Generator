@@ -1,7 +1,10 @@
 ﻿// Forrest Lowe 2020-2021
 using InvoiceGenerator.InputPropmts;
 using System;
+using System.Collections.Generic;
+using System.Diagnostics;
 using System.Drawing;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 
 namespace InvoiceGenerator
@@ -12,9 +15,12 @@ namespace InvoiceGenerator
 
         private DocumentManager document;
         private JsonManager saveManager;
+
+        [Obsolete]
         private BillingObject data;
-        private Contractor contractorData;
-        private Client clientData;
+
+        private Contractor contractor;
+        private Client client;
 
         private const string EXPORT = "Export PDF";
         private const string EXPORT_LOCATION = "Change export location";
@@ -36,22 +42,33 @@ namespace InvoiceGenerator
 
         private TextBox debugTextObject;
 
-        public static string Format(string input)
+        private void OpenUrl(string url)
         {
-            var val = "";
-
-            for (int i = 0; i < input.Length; i++)
+            try
             {
-                // Check for a new line character and format appropriatly.
-                if (input[i] == '\\' && i + 1 < input.Length && input[i + 1] == 'n')
-                {
-                    val += '\n';
-                    i++; // Skip the next index
-                }
-                else val += input[i];
+                Process.Start(url);
             }
-
-            return val;
+            catch
+            {
+                // hack because of this: https://github.com/dotnet/corefx/issues/10361
+                if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    url = url.Replace("&", "^&");
+                    Process.Start(new ProcessStartInfo("cmd", $"/c start {url}") { CreateNoWindow = true });
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.Linux))
+                {
+                    Process.Start("xdg-open", url);
+                }
+                else if (RuntimeInformation.IsOSPlatform(OSPlatform.OSX))
+                {
+                    Process.Start("open", url);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         // Initialization
@@ -84,13 +101,36 @@ namespace InvoiceGenerator
             menuStrip.Parent = this;
 
             // HOW TO ADD A NEW MENU DROPDOWN ITEM
-            var export = new ToolStripMenuItem("Export...");
+            var file = new ToolStripMenuItem("File...");
 
             var exportPDF = new ToolStripMenuItem(EXPORT, null, new EventHandler(ExportPDF_Click));
             var exportLocation = new ToolStripMenuItem(EXPORT_LOCATION, null, new EventHandler((object s, EventArgs e) => SetExportLocation()));
 
-            export.DropDownItems.AddRange(new ToolStripItem[] { exportPDF, exportLocation });
-            menuStrip.Items.Add(export);
+            /* Not working, needs more tests
+            var workItemDisplayType = new ToolStripMenuItem("Work item display type...");
+            var workItemTypes = new List<ToolStripItem>();
+            var types = Enum.GetNames(typeof(WorkItemDisplayType));
+
+            for (int i = 0; i < types.Length; i++)
+            {
+                int value = i;
+
+                workItemTypes.Add(new ToolStripMenuItem(types[i], null,
+                    new EventHandler((object s, EventArgs e) =>
+                    {
+                        SetExportDisplayType(i);
+                    })));
+            }
+
+            workItemDisplayType.DropDownItems.AddRange(workItemTypes.ToArray());*/
+
+            var saveWorkItems = new ToolStripMenuItem(SAVE_WORKITEMS, null, new EventHandler((object s, EventArgs e) => SaveWorkItems()));
+            var loadWorkItems = new ToolStripMenuItem(LOAD_WORKITEMS, null, new EventHandler((object s, EventArgs e) => LoadWorkItems()));
+
+            //            file.DropDownItems.AddRange(new ToolStripItem[] { exportPDF, exportLocation, workItemDisplayType, saveWorkItems, loadWorkItems });
+            file.DropDownItems.AddRange(new ToolStripItem[] { exportPDF, exportLocation, saveWorkItems, loadWorkItems });
+
+            menuStrip.Items.Add(file);
 
             // END HOW TO
 
@@ -98,16 +138,27 @@ namespace InvoiceGenerator
             //menuStrip.Items.Add(EXPORT_LOCATION);
             menuStrip.Items.Add(MODIFY_CONTACT_INFO);
 
-            var workItems = new ToolStripMenuItem("Work items...");
+            var moreInfo = new ToolStripMenuItem("Information...");
 
-            var saveWorkItems = new ToolStripMenuItem(SAVE_WORKITEMS, null, new EventHandler((object s, EventArgs e) => SaveWorkItems()));
-            var loadWorkItems = new ToolStripMenuItem(LOAD_WORKITEMS, null, new EventHandler((object s, EventArgs e) => LoadWorkItems()));
+            var iText7 = new ToolStripMenuItem("PDFs presented by iText7", null, new EventHandler((object s, EventArgs e) =>
+            {
+                OpenUrl("https://itextpdf.com/en");
+            }));
+            var newtonSoftJSON = new ToolStripMenuItem("JSON serialization presented by Newtonsoft.Json", null, new EventHandler((object s, EventArgs e) =>
+            {
+                OpenUrl("https://www.newtonsoft.com/json");
+            }));
+            var simplify = new ToolStripMenuItem("Windows forms presented by Simplify", null, new EventHandler((object s, EventArgs e) =>
+            {
+                OpenUrl("https://github.com/SimplifyNet/Simplify");
+            }));
+            var source = new ToolStripMenuItem("Access source code", null, new EventHandler((object s, EventArgs e) =>
+            {
+                OpenUrl("https://github.com/onesketchyguy/Invoice-Generator");
+            }));
 
-            workItems.DropDownItems.AddRange(new ToolStripItem[] { saveWorkItems, loadWorkItems });
-            menuStrip.Items.Add(workItems);
-
-            //menuStrip.Items.Add(SAVE_WORKITEMS);
-            //menuStrip.Items.Add(LOAD_WORKITEMS);
+            moreInfo.DropDownItems.AddRange(new ToolStripItem[] { iText7, newtonSoftJSON, simplify, source });
+            menuStrip.Items.Add(moreInfo);
 
             menuStrip.ItemClicked += Toolbar_ItemClicked;
 
@@ -234,31 +285,31 @@ namespace InvoiceGenerator
             var clients = saveManager.LoadClients();
             if (clients != null && clients.Length > 0)
             {
-                clientData = clients[0]; // Take the first client by default
+                client = clients[0]; // Take the first client by default
             }
 
-            contractorData = saveManager.LoadContractor();
+            contractor = saveManager.LoadContractor();
 
-            if (contractorData == null && clientData == null)
+            if (contractor == null && client == null)
             {
                 if (loadData != null)
                 {
                     // Get data
                     data = loadData;
 
-                    contractorData = new Contractor();
-                    contractorData.name = data.biller;
-                    contractorData.address = data.billerAddress;
-                    contractorData.contact = data.billerContact;
+                    contractor = new Contractor();
+                    contractor.name = data.biller;
+                    contractor.address = data.billerAddress;
+                    contractor.contact = data.billerContact;
 
-                    clientData = new Client();
-                    clientData.name = data.billing;
-                    clientData.address = data.billingAddress;
-                    clientData.contact = data.billingContact;
-                    clientData.chargePerHour = data.chargePerHour;
-                    clientData.invoiceNumber = data.invoiceNumber;
+                    client = new Client();
+                    client.name = data.billing;
+                    client.address = data.billingAddress;
+                    client.contact = data.billingContact;
+                    client.chargePerHour = data.chargePerHour;
+                    client.invoiceNumber = data.invoiceNumber;
 
-                    if (string.IsNullOrEmpty(data.invoiceDirectory) || string.IsNullOrEmpty(contractorData.invoiceDirectory))
+                    if (string.IsNullOrEmpty(data.invoiceDirectory) || string.IsNullOrEmpty(contractor.invoiceDirectory))
                         SetExportLocation();
                 }
                 else
@@ -269,17 +320,17 @@ namespace InvoiceGenerator
                         {
                             data = recievedData;
 
-                            contractorData = new Contractor();
-                            contractorData.name = data.biller;
-                            contractorData.address = data.billerAddress;
-                            contractorData.contact = data.billerContact;
+                            contractor = new Contractor();
+                            contractor.name = data.biller;
+                            contractor.address = data.billerAddress;
+                            contractor.contact = data.billerContact;
 
-                            clientData = new Client();
-                            clientData.name = data.billing;
-                            clientData.address = data.billingAddress;
-                            clientData.contact = data.billingContact;
-                            clientData.chargePerHour = data.chargePerHour;
-                            clientData.invoiceNumber = data.invoiceNumber;
+                            client = new Client();
+                            client.name = data.billing;
+                            client.address = data.billingAddress;
+                            client.contact = data.billingContact;
+                            client.chargePerHour = data.chargePerHour;
+                            client.invoiceNumber = data.invoiceNumber;
 
                             SetExportLocation();
                         }));
@@ -359,17 +410,35 @@ namespace InvoiceGenerator
 
         private void ExportPDF_Click(object sender, EventArgs e)
         {
-            // Verify the invoice directory
-            document.data = data;
+            // Verify the data
+            // By using this obsolete data we are allowing for backwards compatability
+            if (data != null && client == null)
+            {
+                client = new Client();
+                client.address = data.billingAddress;
+                client.name = data.billing;
+                client.contact = data.billingContact;
+
+                client.invoiceNumber = data.invoiceNumber;
+                client.chargePerHour = data.chargePerHour;
+            }
+
+            if (data != null && contractor == null)
+            {
+                contractor = new Contractor();
+                contractor.name = data.biller;
+                contractor.address = data.billerAddress;
+                contractor.contact = data.billerContact;
+
+                contractor.invoiceDirectory = data.invoiceDirectory;
+            }
+
+            document.SetData(ref client, ref contractor);
             document.CheckInvoiceDirectory();
 
             // Format and print to invoice
             double totalHoursWorked = 0.0;
-            foreach (var item in document.workLogs)
-                totalHoursWorked += item.Value;
-
-            data.billerAddress = Format(data.billerAddress);
-            data.billingAddress = Format(data.billingAddress);
+            foreach (var item in document.workLogs) totalHoursWorked += item.Value;
 
             document.CreateDocument(totalHoursWorked);
 
@@ -377,8 +446,17 @@ namespace InvoiceGenerator
             //Process.Start(Directory.GetCurrentDirectory() + "/" + pdfFilename); TO BE IMPLEMENTED
 
             // Finished
-            saveManager.SaveBilling(data);
-            WriteLine($"Done.\nYou can find your invoice at {data.invoiceDirectory + document.PDF_FILENAME}.");
+
+            // Old method, in order to remove this method we're just going to stop saving the old file type.
+            //saveManager.SaveBilling(data);
+            SaveWorkItems();
+            saveManager.SaveContractor(contractor);
+            WriteLine($"Done.\nYou can find your invoice at {contractor.invoiceDirectory + document.PDF_FILENAME}.");
+        }
+
+        private void SetExportDisplayType(int type)
+        {
+            document.SetWorkItemDisplayType((WorkItemDisplayType)type);
         }
 
         private void SetExportLocation()
@@ -394,11 +472,9 @@ namespace InvoiceGenerator
                     filePath = folderDialog.SelectedPath;
             }
 
-            data.invoiceDirectory = filePath;
-            saveManager.SaveBilling(data);
-
-            contractorData.invoiceDirectory = filePath;
-            saveManager.SaveContractor(contractorData);
+            // Set tje directory
+            contractor.invoiceDirectory = filePath;
+            saveManager.SaveContractor(contractor);
         }
 
         private void SaveWorkItems()
@@ -420,12 +496,12 @@ namespace InvoiceGenerator
 
             saveManager.SaveData(data);
 
-            saveManager.SaveClient(clientData, data);
+            saveManager.SaveClient(client, data);
         }
 
         private void LoadWorkItems()
         {
-            var loadData = saveManager.LoadData(clientData.name);
+            var loadData = saveManager.LoadData(client.name);
 
             if (loadData == null || loadData.description == null)
             {
